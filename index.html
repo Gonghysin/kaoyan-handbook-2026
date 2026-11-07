@@ -12,6 +12,7 @@
 <meta name="description" content="华中科技大学光学与电子信息学院考研手册（2026 年版）经验分享篇，在线阅读与 PDF 下载">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer-when-downgrade">
+<link rel="preconnect" href="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com">
 <style>
   :root { --bg:#f4f4f1; --card:#fff; --fg:#1d1d1f; --muted:#6b6b70; --accent:#1f5fbf; --line:#e3e2dd; }
   @media (prefers-color-scheme: dark) {
@@ -31,8 +32,6 @@
   .stats b { color:var(--fg); font-variant-numeric:tabular-nums; }
   .btn { display:inline-block; padding:7px 14px; border-radius:8px; background:var(--accent); color:#fff;
          text-decoration:none; font-weight:600; font-size:14px; white-space:nowrap; }
-  .dl { display:flex; align-items:center; gap:10px; }
-  .alt { color:var(--muted); font-size:13px; }
   .pages { display:flex; flex-direction:column; gap:14px; }
   .pages img { display:block; width:100%; height:auto; background:#fff; border:1px solid var(--line);
                border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
@@ -51,10 +50,7 @@
 
   <div class="bar">
     <div class="stats">本页浏览 <b id="busuanzi_value_page_pv">–</b> 次</div>
-    <span class="dl">
-      <a class="btn" id="dl" href="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/public/kaoyan-handbook-2026/kaoyan-handbook-2026.pdf" rel="noopener">下载 PDF</a>
-      <a class="alt" href="handbook.pdf" download>备用下载</a>
-    </span>
+    <a class="btn" id="dl" href="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/public/kaoyan-handbook-2026/kaoyan-handbook-2026.pdf" rel="noopener">下载 PDF</a>
   </div>
 
   <section class="pages" id="pages"></section>
@@ -63,33 +59,40 @@
 <div class="pager" id="pager" hidden><span id="cur">1</span> / <span id="tot">–</span><a href="#">回到顶部</a></div>
 
 <script>
+// Content (manifest, page images, PDF) lives in Tencent COS and is replaced by 更新手册.py;
+// this page only renders it. manifest.js is a script (not JSON) so no bucket CORS rule is needed.
+const MANIFEST = "https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/public/kaoyan-handbook-2026/manifest.js";
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const loadScript = src => new Promise((ok, fail) => {
+  const s = document.createElement("script");
+  s.src = src; s.onload = ok; s.onerror = fail;
+  document.head.appendChild(s);
+});
+
 (async () => {
-  const $ = id => document.getElementById(id);
-  let m;
-  const sleep = ms => new Promise(r => setTimeout(r, ms));
-  for (let t = 0; t < 4 && !m; t++) {
-    try { m = await (await fetch("manifest.json", { cache: "no-cache" })).json(); }
+  for (let t = 0; t < 4 && !window.HANDBOOK; t++) {
+    try { await loadScript(`${MANIFEST}?t=${Date.now()}`); }
     catch (e) { await sleep(800 * (t + 1)); }
   }
+  const m = window.HANDBOOK;
   if (!m) {
-    $("pages").innerHTML = "<div class=\"err\">页面加载失败，请刷新重试，或直接 <a href=\"handbook.pdf\">下载 PDF</a>。</div>";
+    $("pages").innerHTML = "<div class=\"err\">页面加载失败，请刷新重试，或直接点上方「下载 PDF」。</div>";
     $("meta").textContent = "";
     return;
   }
-  const name = m.file.replace(/\.pdf$/i, "");
   document.title = m.title;
   $("title").textContent = m.title;
   $("meta").textContent = `共 ${m.pages} 页 · PDF ${(m.size / 1048576).toFixed(1)} MB · 更新于 ${m.updated}`;
-  document.querySelector(".alt").setAttribute("download", m.file);
+  $("dl").href = m.pdf;
   $("tot").textContent = m.pages;
-  $("foot").textContent = name;
+  $("foot").textContent = m.file.replace(/\.pdf$/i, "");
 
   const box = $("pages"), v = encodeURIComponent(m.updated);
   for (let i = 1; i <= m.pages; i++) {
     const img = new Image();
-    const src = `pages/p-${String(i).padStart(3, "0")}.jpg?v=${v}`;
+    const src = `${m.base}/pages/p-${String(i).padStart(3, "0")}.jpg?v=${v}`;
     let tries = 0;
-    // github.io occasionally resets connections from mainland China; retry with backoff
     img.onerror = () => { if (tries++ < 3) setTimeout(() => { img.src = src + "&r=" + tries; }, 1000 * tries); };
     img.src = src;
     img.alt = `第 ${i} 页`;
@@ -99,13 +102,12 @@
     img.decoding = "async";
     box.appendChild(img);
   }
-  const pager = $("pager");
-  pager.hidden = false;
+  $("pager").hidden = false;
   const io = new IntersectionObserver(es => {
     for (const e of es) if (e.isIntersecting) $("cur").textContent = e.target.dataset.n;
   }, { rootMargin: "-45% 0px -50% 0px" });
   box.querySelectorAll("img").forEach(el => io.observe(el));
-  pager.querySelector("a").onclick = e => { e.preventDefault(); scrollTo(0, 0); };
+  $("pager").querySelector("a").onclick = e => { e.preventDefault(); scrollTo(0, 0); };
 })();
 </script>
 <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
