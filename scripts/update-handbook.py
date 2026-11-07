@@ -9,7 +9,7 @@ the bucket itself stays private):
     pages/p-001.jpg ...        page images shown by the web page
     manifest.js                title / page count / update time, uploaded last
 
-The web page at https://gonghysin.github.io/kaoyan-handbook-2026/ reads
+The web page at https://kysc-xyzx.github.io/kaoyan-handbook-2026/ reads
 everything from COS, so nothing on GitHub has to change.
 
 Runs on the Mac: needs poppler (brew install poppler), rclone
@@ -102,5 +102,5 @@ with tempfile.TemporaryDirectory() as tmp:
            "--header-upload", "Cache-Control: no-cache")
 
 print(f"\n完成：{manifest['title']}，共 {pages} 页，更新于 {manifest['updated']}")
-print("在线阅读：https://gonghysin.github.io/kaoyan-handbook-2026/")
+print("在线阅读：https://kysc-xyzx.github.io/kaoyan-handbook-2026/")
 print(f"下载链接：{manifest['pdf']}")

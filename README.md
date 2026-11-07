@@ -1,6 +1,6 @@
 # 考研手册 2026 · 经验分享篇（在线阅读）
 
-在线地址：https://gonghysin.github.io/kaoyan-handbook-2026/
+在线地址：https://kysc-xyzx.github.io/kaoyan-handbook-2026/
 
 这个仓库只放网页（`index.html`）。手册内容都在腾讯云 COS 上：
 
