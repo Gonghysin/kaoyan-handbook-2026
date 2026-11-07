@@ -1,0 +1,73 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install poppler
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
+      - name: Render PDF to page images
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          pdfs=(pdf/*.pdf)
+          if [ ${#pdfs[@]} -ne 1 ]; then
+            echo "::error::pdf/ 目录里必须正好有 1 个 PDF，现在有 ${#pdfs[@]} 个"
+            exit 1
+          fi
+          src="${pdfs[0]}"
+          mkdir -p _site/pages
+          cp index.html _site/
+          cp "$src" _site/handbook.pdf
+          pdftoppm -r 110 -jpeg -jpegopt quality=82,progressive=y "$src" _site/pages/p
+          # pdftoppm pads numbers by page count (p-01 / p-001); normalize to p-001.jpg
+          (cd _site/pages && for f in p-*.jpg; do n=${f#p-}; n=${n%.jpg}; mv -n "$f" "$(printf "p-%03d.jpg" $((10#$n)))" 2>/dev/null || true; done)
+          pages=$(pdfinfo "$src" | awk "/^Pages:/{print \$2}")
+          title=$(pdfinfo "$src" | sed -n "s/^Title: *//p")
+          psize=$(pdfinfo "$src" | sed -n "s/^Page size: *//p")
+          python3 - "$src" "$pages" "$title" "$psize" <<'PY'
+          import json, os, re, sys, datetime
+          src, pages, title, psize = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4]
+          m = re.match(r"([\d.]+) x ([\d.]+)", psize)
+          w, h = (round(float(m[1])), round(float(m[2]))) if m else (595, 842)
+          json.dump({
+              "file": os.path.basename(src),
+              "title": title or os.path.splitext(os.path.basename(src))[0],
+              "pages": pages,
+              "width": w, "height": h,
+              "size": os.path.getsize(src),
+              "updated": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime("%Y-%m-%d %H:%M"),
+          }, open("_site/manifest.json", "w"), ensure_ascii=False)
+          PY
+          cat _site/manifest.json; du -sh _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
