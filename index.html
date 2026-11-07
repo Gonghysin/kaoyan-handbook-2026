@@ -2,114 +2,24 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<script>
-  // Count /index.html and the directory URL as one page: busuanzi keys page_pv by the page URL
-  if (/\/index\.html$/.test(location.pathname))
-    history.replaceState(null, "", location.pathname.replace(/index\.html$/, "") + location.search + location.hash);
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>考研手册 2026 · 经验分享篇</title>
-<meta name="description" content="华中科技大学光学与电子信息学院考研手册（2026 年版）经验分享篇，在线阅读与 PDF 下载">
+<title>考研手册 2026 · 已迁移</title>
 <meta name="robots" content="noindex, nofollow, noarchive">
-<meta name="referrer" content="no-referrer-when-downgrade">
-<link rel="preconnect" href="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com">
+<link rel="canonical" href="https://kysc-xyzx.github.io/kaoyan-handbook-2026/">
+<meta http-equiv="refresh" content="0; url=https://kysc-xyzx.github.io/kaoyan-handbook-2026/">
+<script>
+  // Old address: forward to the kysc-xyzx organization site, keeping any #page anchor or query
+  location.replace("https://kysc-xyzx.github.io/kaoyan-handbook-2026/" + location.search + location.hash);
+</script>
 <style>
-  :root { --bg:#f4f4f1; --card:#fff; --fg:#1d1d1f; --muted:#6b6b70; --accent:#1f5fbf; --line:#e3e2dd; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#141416; --card:#1f1f22; --fg:#ececee; --muted:#9a9aa2; --accent:#6ea2ff; --line:#2e2e33; }
-  }
-  * { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-  body { margin:0; background:var(--bg); color:var(--fg);
-         font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif; }
-  main { max-width:900px; margin:0 auto; padding:28px 16px 64px; }
-  h1 { margin:0; font-size:24px; line-height:1.35; }
-  .meta { margin:6px 0 0; color:var(--muted); font-size:14px; }
-  .bar { position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center;
-         justify-content:space-between; margin:18px 0 20px; padding:10px 14px; background:var(--card);
-         border:1px solid var(--line); border-radius:10px; }
-  .stats { color:var(--muted); font-size:14px; }
-  .stats b { color:var(--fg); font-variant-numeric:tabular-nums; }
-  .btn { display:inline-block; padding:7px 14px; border-radius:8px; background:var(--accent); color:#fff;
-         text-decoration:none; font-weight:600; font-size:14px; white-space:nowrap; }
-  .pages { display:flex; flex-direction:column; gap:14px; }
-  .pages img { display:block; width:100%; height:auto; background:#fff; border:1px solid var(--line);
-               border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
-  .pager { position:fixed; right:16px; bottom:16px; padding:6px 12px; border-radius:999px; background:var(--card);
-           border:1px solid var(--line); color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums;
-           box-shadow:0 2px 8px rgba(0,0,0,.12); }
-  .pager a { color:var(--accent); text-decoration:none; margin-left:8px; }
-  .err { padding:24px; text-align:center; color:var(--muted); }
-  footer { margin-top:28px; color:var(--muted); font-size:13px; text-align:center; }
+  body { margin:0; padding:48px 16px; text-align:center; background:#f4f4f1; color:#1d1d1f;
+         font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; }
+  a { color:#1f5fbf; }
+  @media (prefers-color-scheme: dark) { body { background:#141416; color:#ececee; } a { color:#6ea2ff; } }
 </style>
 </head>
 <body>
-<main>
-  <h1 id="title">考研手册 2026 · 经验分享篇</h1>
-  <p class="meta" id="meta">加载中…</p>
-
-  <div class="bar">
-    <div class="stats">本页浏览 <b id="busuanzi_value_page_pv">–</b> 次</div>
-    <a class="btn" id="dl" href="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/public/kaoyan-handbook-2026/kaoyan-handbook-2026.pdf" rel="noopener">下载 PDF</a>
-  </div>
-
-  <section class="pages" id="pages"></section>
-  <footer id="foot"></footer>
-</main>
-<div class="pager" id="pager" hidden><span id="cur">1</span> / <span id="tot">–</span><a href="#">回到顶部</a></div>
-
-<script>
-// Content (manifest, page images, PDF) lives in Tencent COS and is replaced by 更新手册.py;
-// this page only renders it. manifest.js is a script (not JSON) so no bucket CORS rule is needed.
-const MANIFEST = "https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/public/kaoyan-handbook-2026/manifest.js";
-const $ = id => document.getElementById(id);
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const loadScript = src => new Promise((ok, fail) => {
-  const s = document.createElement("script");
-  s.src = src; s.onload = ok; s.onerror = fail;
-  document.head.appendChild(s);
-});
-
-(async () => {
-  for (let t = 0; t < 4 && !window.HANDBOOK; t++) {
-    try { await loadScript(`${MANIFEST}?t=${Date.now()}`); }
-    catch (e) { await sleep(800 * (t + 1)); }
-  }
-  const m = window.HANDBOOK;
-  if (!m) {
-    $("pages").innerHTML = "<div class=\"err\">页面加载失败，请刷新重试，或直接点上方「下载 PDF」。</div>";
-    $("meta").textContent = "";
-    return;
-  }
-  document.title = m.title;
-  $("title").textContent = m.title;
-  $("meta").textContent = `共 ${m.pages} 页 · PDF ${(m.size / 1048576).toFixed(1)} MB · 更新于 ${m.updated}`;
-  $("dl").href = m.pdf;
-  $("tot").textContent = m.pages;
-  $("foot").textContent = m.file.replace(/\.pdf$/i, "");
-
-  const box = $("pages"), v = encodeURIComponent(m.updated);
-  for (let i = 1; i <= m.pages; i++) {
-    const img = new Image();
-    const src = `${m.base}/pages/p-${String(i).padStart(3, "0")}.jpg?v=${v}`;
-    let tries = 0;
-    img.onerror = () => { if (tries++ < 3) setTimeout(() => { img.src = src + "&r=" + tries; }, 1000 * tries); };
-    img.src = src;
-    img.alt = `第 ${i} 页`;
-    img.width = m.width; img.height = m.height;
-    img.dataset.n = i;
-    if (i > 2) img.loading = "lazy";
-    img.decoding = "async";
-    box.appendChild(img);
-  }
-  $("pager").hidden = false;
-  const io = new IntersectionObserver(es => {
-    for (const e of es) if (e.isIntersecting) $("cur").textContent = e.target.dataset.n;
-  }, { rootMargin: "-45% 0px -50% 0px" });
-  box.querySelectorAll("img").forEach(el => io.observe(el));
-  $("pager").querySelector("a").onclick = e => { e.preventDefault(); scrollTo(0, 0); };
-})();
-</script>
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <p>考研手册已迁移到新地址，正在跳转…</p>
+  <p><a href="https://kysc-xyzx.github.io/kaoyan-handbook-2026/">https://kysc-xyzx.github.io/kaoyan-handbook-2026/</a></p>
 </body>
 </html>
