@@ -2,6 +2,11 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
+<script>
+  // Count /index.html and the directory URL as one page: busuanzi keys page_pv by the page URL
+  if (/\/index\.html$/.test(location.pathname))
+    history.replaceState(null, "", location.pathname.replace(/index\.html$/, "") + location.search + location.hash);
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>考研手册 2026 · 经验分享篇</title>
 <meta name="description" content="华中科技大学光学与电子信息学院考研手册（2026 年版）经验分享篇，在线阅读与 PDF 下载">
