@@ -56,9 +56,12 @@
 (async () => {
   const $ = id => document.getElementById(id);
   let m;
-  try {
-    m = await (await fetch("manifest.json", { cache: "no-cache" })).json();
-  } catch (e) {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  for (let t = 0; t < 4 && !m; t++) {
+    try { m = await (await fetch("manifest.json", { cache: "no-cache" })).json(); }
+    catch (e) { await sleep(800 * (t + 1)); }
+  }
+  if (!m) {
     $("pages").innerHTML = "<div class=\"err\">页面加载失败，请刷新重试，或直接 <a href=\"handbook.pdf\">下载 PDF</a>。</div>";
     $("meta").textContent = "";
     return;
@@ -74,7 +77,11 @@
   const box = $("pages"), v = encodeURIComponent(m.updated);
   for (let i = 1; i <= m.pages; i++) {
     const img = new Image();
-    img.src = `pages/p-${String(i).padStart(3, "0")}.jpg?v=${v}`;
+    const src = `pages/p-${String(i).padStart(3, "0")}.jpg?v=${v}`;
+    let tries = 0;
+    // github.io occasionally resets connections from mainland China; retry with backoff
+    img.onerror = () => { if (tries++ < 3) setTimeout(() => { img.src = src + "&r=" + tries; }, 1000 * tries); };
+    img.src = src;
     img.alt = `第 ${i} 页`;
     img.width = m.width; img.height = m.height;
     img.dataset.n = i;
