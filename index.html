@@ -31,6 +31,8 @@
   .stats b { color:var(--fg); font-variant-numeric:tabular-nums; }
   .btn { display:inline-block; padding:7px 14px; border-radius:8px; background:var(--accent); color:#fff;
          text-decoration:none; font-weight:600; font-size:14px; white-space:nowrap; }
+  .dl { display:flex; align-items:center; gap:10px; }
+  .alt { color:var(--muted); font-size:13px; }
   .pages { display:flex; flex-direction:column; gap:14px; }
   .pages img { display:block; width:100%; height:auto; background:#fff; border:1px solid var(--line);
                border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
@@ -49,7 +51,10 @@
 
   <div class="bar">
     <div class="stats">本页浏览 <b id="busuanzi_value_page_pv">–</b> 次</div>
-    <a class="btn" id="dl" href="handbook.pdf" download>下载 PDF</a>
+    <span class="dl">
+      <a class="btn" id="dl" href="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/public/kaoyan-handbook-2026/kaoyan-handbook-2026.pdf" rel="noopener">下载 PDF</a>
+      <a class="alt" href="handbook.pdf" download>备用下载</a>
+    </span>
   </div>
 
   <section class="pages" id="pages"></section>
@@ -75,7 +80,7 @@
   document.title = m.title;
   $("title").textContent = m.title;
   $("meta").textContent = `共 ${m.pages} 页 · PDF ${(m.size / 1048576).toFixed(1)} MB · 更新于 ${m.updated}`;
-  $("dl").setAttribute("download", m.file);
+  document.querySelector(".alt").setAttribute("download", m.file);
   $("tot").textContent = m.pages;
   $("foot").textContent = name;
 
